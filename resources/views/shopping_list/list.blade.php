@@ -1,42 +1,93 @@
-<!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>買い物リスト(一覧画面)</title>
-    </head>
-    <body>
-        <h1>「買うもの」の登録</h1>
-            <form action="./top.html" method="post">
-                「買うもの」名:<input><br>
+@extends('layout')
 
-                <button>タスクを登録する</button>
+{{-- タイトル --}}
+@section('title')(一覧画面)@endsection
+
+{{-- メインコンテンツ --}}
+@section('contets')
+        <h1>「買うもの」の登録</h1>
+
+        @if (session('front.shopping_lists_register_success') == true)
+                「買うもの」を登録しました！！<br>
+        @endif
+
+        @if (session('front.shopping_list_delete_success') == true)
+                「買うもの」を削除しました！！<br>
+        @endif
+
+        @if (session('front.shopping_list_completed_success') == true)
+                「買うもの」を完了にしました！！<br>
+        @endif
+
+        @if (session('front.shopping_list_completed_failure') == true)
+                「買うもの」の完了に失敗しました....<br>
+        @endif
+
+        @if ($errors->any())
+                <div>
+                @foreach ($errors->all() as $error)
+                    {{ $error }}<br>
+                @endforeach
+                </div>
+            @endif
+
+            <form action="/shopping_list/register" method="post">
+                @csrf
+                「買うもの」名:<input name="name" value="{{ old('name') }}"><br>
+
+                <button>「買うもの」を登録する</button>
             </form>
 
-        <h1>タスクの一覧</h1>
-        <a href="./top.html">CSVダウンロード</a><br>
+        <h1>「買うもの」一覧</h1>
+        <a href="/completed_shopping_list/list">購入済み「買うもの」一覧</a><br>
         <table border="1">
         <tr>
             <th>登録日
             <th>「買うもの」名
+            @foreach ($list as $shopping_list)
         <tr>
-            <td>2022/01/01
-            <td>焼肉
-            <td><form action="./top.html"><button>完了</button>
-            <td><form action="./top.html"><button>削除</button>
+            <td>{{ $shopping_list->created_at }}
+            <td>{{ $shopping_list->name }}
+
+            <td><form action="{{ route('complete', ['shopping_list_id' => $shopping_list->id]) }}" method="post">
+            @csrf
+
+            <button onclick='return confirm("この「買うもの」を「完了」にします。よろしいですか？");'>完了</button>
             </form>
+            <td>　</td>
+
+            <td><form action="{{ route('delete', ['shopping_list_id' => $shopping_list->id]) }}" method="post">
+            @csrf
+            @method("DELETE")
+                <button onclick='return confirm("この「買うもの」を削除します。よろしいですか？");'>削除</button>
+            </form>
+            @endforeach
         <tr>
 
         </table>
         <!-- ページネーション -->
-        現在 1 ページ目<br>
-        <a href="./top.html">最初のページ</a> /
-        <a href="./top.html">前に戻る</a> /
-        <a href="./top.html">次に進む</a>
+        {{-- {{ $list->links() }} --}}
+        現在 {{ $list->currentPage() }} ページ目<br>
+        @if ($list->onFirstPage() === false)
+        <a href="/shopping_list/list">最初のページ</a>
+        @else
+        最初のページ
+        @endif
+        /
+        @if ($list->previousPageUrl() !== null)
+            <a href="{{ $list->previousPageUrl() }}">前に戻る</a>
+        @else
+            前に戻る
+        @endif
+        /
+        @if ($list->nextPageUrl() !== null)
+            <a href="{{ $list->nextPageUrl() }}">次に進む</a>
+        @else
+            次に進む
+        @endif
         <br>
         <hr>
         <menu label="リンク">
-        <a href="./index.html">ログアウト</a><br>
+        <a href="/logout">ログアウト</a><br>
         </menu>
-    </body>
-</html>
+@endsection
