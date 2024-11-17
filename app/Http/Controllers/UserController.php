@@ -55,7 +55,7 @@ class UserController extends Controller
             exit;
         }
 
-        // タスク登録成功
+        // ユーザ登録成功
         $request->session()->flash('front.user_register_success', true);
 
         // リダイレクト

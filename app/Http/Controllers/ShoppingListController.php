@@ -25,7 +25,7 @@ class ShoppingListController extends Controller
 
         // 一覧の取得
         $list = ShoppingListModel::where('user_id', Auth::id())
-        ->orderBy('created_at')
+        ->orderBy('name')
         ->paginate($per_page);
         // ->get();
         // $sql = ShoppingListModel::where('user_id', Auth::id())->toSql();
@@ -109,51 +109,51 @@ class ShoppingListController extends Controller
     /**
      * 買うものの完了
      */
-    // public function complete(Request $request, $shopping_list_id)
-    // {
-    //     /* 買うものを完了テーブルに移動させる */
-    //     try {
-    //         // トランザクション開始
-    //         DB::beginTransaction();
+    public function complete(Request $request, $shopping_list_id)
+    {
+        /* 買うものを完了テーブルに移動させる */
+        try {
+            // トランザクション開始
+            DB::beginTransaction();
 
-    //         // shopping_list_idのレコードを取得する
-    //         $shopping_list = $this->getShoppingListModel($shopping_list_id);
-    //         if ($shopping_list === null) {
-    //             // shopping_list_idが不正なのでトランザクション終了
-    //             throw new \Exception('');
-    //         }
+            // shopping_list_idのレコードを取得する
+            $shopping_list = $this->getShoppingListModel($shopping_list_id);
+            if ($shopping_list === null) {
+                // shopping_list_idが不正なのでトランザクション終了
+                throw new \Exception('');
+            }
 
-    //         // shopping_list側を削除する
-    //         $shopping_list->delete();
-    //         // var_dump($shopping_list->toArray()); exit;
-
-
-    //         // completed_shoppingList側にinsertする
-
-    //         $dask_datum = $shopping_list->toArray();
-    //         // unset($dask_datum['created_at']);
-    //         // unset($dask_datum['updated_at']);
-    //         $r = CompletedShoppingListModel::create($dask_datum);
-    //         if ($r === null) {
-    //             // insertで失敗したのでトランザクション終了
-    //             throw new \Exception('');
-    //         }
-    //         // echo '処理成功'; exit;
+            // shopping_list側を削除する
+            $shopping_list->delete();
+            // var_dump($shopping_list->toArray()); exit;
 
 
-    //         // トランザクション終了
-    //         DB::commit();
-    //         // 完了メッセージ出力
-    //         $request->session()->flash('front.shopping_list_completed_success', true);
-    //     } catch(\Throwable $e) {
-    //         // var_dump($e->getMessage()); exit;
-    //         // トランザクション異常終了
-    //         DB::rollBack();
-    //         // 完了失敗メッセージ出力
-    //         $request->session()->flash('front.shopping_list_completed_failure', true);
-    //     }
+            // completed_shoppingList側にinsertする
 
-    //     // 一覧に遷移する
-    //     return redirect('/shopping_list/list');
-    // }
+            $dask_datum = $shopping_list->toArray();
+            // unset($dask_datum['created_at']);
+            // unset($dask_datum['updated_at']);
+            $r = CompletedShoppingListModel::create($dask_datum);
+            if ($r === null) {
+                // insertで失敗したのでトランザクション終了
+                throw new \Exception('');
+            }
+            // echo '処理成功'; exit;
+
+
+            // トランザクション終了
+            DB::commit();
+            // 完了メッセージ出力
+            $request->session()->flash('front.shopping_list_completed_success', true);
+        } catch(\Throwable $e) {
+            // var_dump($e->getMessage()); exit;
+            // トランザクション異常終了
+            DB::rollBack();
+            // 完了失敗メッセージ出力
+            $request->session()->flash('front.shopping_list_completed_failure', true);
+        }
+
+        // 一覧に遷移する
+        return redirect('/shopping_list/list');
+    }
 }
