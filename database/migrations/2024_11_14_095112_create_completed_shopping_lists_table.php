@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('created_at')->useCurrent()->comment('購入日');
             $table->date('updated_at')->useCurrent()->useCurrentOnUpdate();
             //
-            $table->primary('id');
+            // $table->primary('id');
         });
     }
 
