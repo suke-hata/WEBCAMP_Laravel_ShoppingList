@@ -14,7 +14,7 @@
         <tr>
             <td>{{ $user->id }}
             <td>{{ $user->name }}
-            <td>{{ $user->shopping_lists_num }}
+            <td>{{ $user->completed_shopping_lists_num }}
     @endforeach
         </table>
 @endsection

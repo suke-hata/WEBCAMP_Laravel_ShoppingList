@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User as UserModel;
+use App\Models\CompletedShoppingList as CompletedShoppingListModel;
 
 class UserController extends Controller
 {
@@ -19,8 +20,8 @@ class UserController extends Controller
         // データの取得
         $group_by_column = ['users.id', 'users.name'];
         $list = UserModel::select($group_by_column)
-                            ->selectRaw('count(shopping_lists.id) AS shopping_lists_num')
-                            ->leftJoin('shopping_lists', 'users.id', '=', 'shopping_lists.user_id')
+                            ->selectRaw('count(completed_shopping_lists.id) AS completed_shopping_lists_num')
+                            ->leftJoin('completed_shopping_lists', 'users.id', '=', 'completed_shopping_lists.user_id')
                             ->groupBy($group_by_column)
                             ->orderBy('users.id')
                             ->get();
